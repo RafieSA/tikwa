@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+          cache: true
+      - name: go vet (cek kode aneh)
+        run: go vet ./...
+      - name: go test (jalanin test)
+        run: go test ./... -v
+      - name: build (pastikan bisa di-build)
+        run: go build -o /tmp/tikwa .

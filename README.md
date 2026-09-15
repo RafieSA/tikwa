@@ -1,6 +1,7 @@
 # ▶ TIKWA — Bikin Video HP Tidak Burem
 
 <p align="center">
+  <a href="https://github.com/RafieSA/tikwa/actions/workflows/ci.yml"><img src="https://github.com/RafieSA/tikwa/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <img src="https://img.shields.io/badge/Go-1.26-00ADD8?style=for-the-badge&logo=go" alt="Go 1.26" />
   <img src="https://img.shields.io/badge/TUI-Bubble_Tea-FF75B5?style=for-the-badge" alt="Bubble Tea" />
   <img src="https://img.shields.io/badge/FFmpeg-8.1-007808?style=for-the-badge" alt="FFmpeg" />
