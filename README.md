@@ -131,11 +131,6 @@ Edge cases yang sudah di-handle:
 - **FFmpeg 8.1** — tidak bikin dari 0, manfaatkan yang sudah ada (YAGNI, DRY)
 - Clean Code, SRP, testable, logging — no spaghetti, no shortcut
 
-## 🗺 Roadmap
-
-- [x] **v0.1 — Basic Polish** (sekarang): bright, sharp, scale+pad, CRF, TUI polish
-- [ ] **v0.2 — Smart Clean**: denoise, stabilizer (butuh CPU lebih)
-- [ ] **v0.3 — AI Upscale**: Real-ESRGAN opsional (butuh GPU, model ratusan MB)
 
 ## 🤝 Kontribusi
 
@@ -144,7 +139,3 @@ PR & Issue welcome! Jalanin `go vet ./...` dan `go test ./...` sebelum PR.
 ## 📄 License
 
 MIT — bebas pakai, lihat [LICENSE](LICENSE).
-
----
-
-<p align="center">Dibuat dengan ✨ di kamar, MBA M4, oleh <a href="https://github.com/RafieSA">RafieSA</a> — untuk kreator yang videonya tidak boleh burem lagi.</p>
