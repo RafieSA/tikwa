@@ -62,7 +62,7 @@ func TestValidateInput(t *testing.T) {
 }
 
 func TestBuildArgs(t *testing.T) {
-	args := BuildArgs("/tmp/in.mp4", "/tmp/out.mp4", TikTokProfile())
+	args := BuildArgs("/tmp/in.mp4", "/tmp/out.mp4", TikTokProfile(), FilterNatural)
 	if len(args) < 10 {
 		t.Fatalf("args terlalu pendek: %v", args)
 	}
@@ -81,3 +81,56 @@ func TestBuildArgs(t *testing.T) {
 		t.Fatal("codec harus libx264")
 	}
 }
+func TestFilter(t *testing.T) {
+	for _, f := range []Filter{FilterNatural, FilterDramatis, FilterCinematic, FilterOriginal} {
+		if !f.IsValid() {
+			t.Fatalf("%s harus valid", f)
+		}
+		args := BuildArgs("/tmp/in.mp4", "/tmp/out.mp4", TikTokProfile(), f)
+		joined := strings.Join(args, " ")
+		if !strings.Contains(joined, "scale=") {
+			t.Fatalf("%s harus ada scale", f)
+		}
+	}
+	if FilterRequest.IsValid() == false {
+		t.Fatal("request harus valid tapi tidak dipoles")
+	}
+	// Original tidak boleh ada eq/unsharp
+	orig := strings.Join(BuildArgs("/tmp/in.mp4", "/tmp/out.mp4", WhatsAppProfile(), FilterOriginal), " ")
+	if strings.Contains(orig, "eq=") || strings.Contains(orig, "unsharp=") {
+		t.Fatal("original tidak boleh ada eq/unsharp")
+	}
+	// Dramatis harus ada vignette & contrast tinggi
+	dram := strings.Join(BuildArgs("/tmp/in.mp4", "/tmp/out.mp4", TikTokProfile(), FilterDramatis), " ")
+	if !strings.Contains(dram, "vignette") || !strings.Contains(dram, "1.25") {
+		t.Fatal("dramatis harus ada vignette & contrast 1.25")
+	}
+	// Cinematic harus ada colorbalance & curves
+	cin := strings.Join(BuildArgs("/tmp/in.mp4", "/tmp/out.mp4", TikTokProfile(), FilterCinematic), " ")
+	if !strings.Contains(cin, "colorbalance") || !strings.Contains(cin, "curves") {
+		t.Fatal("cinematic harus ada colorbalance & curves")
+	}
+}
+
+func TestSaveRequest(t *testing.T) {
+	if _, err := SaveRequest(""); err == nil {
+		t.Fatal("kosong harus error")
+	}
+	if _, err := SaveRequest("   "); err == nil {
+		t.Fatal("spasi harus error")
+	}
+	long := strings.Repeat("a", 201)
+	if _, err := SaveRequest(long); err == nil {
+		t.Fatal("kepanjangan harus error")
+	}
+	// happy path
+	path, err := SaveRequest("vintage BW 90an test")
+	if err != nil {
+		t.Fatalf("save request gagal: %v", err)
+	}
+	if path == "" {
+		t.Fatal("path kosong")
+	}
+	// cleanup: hapus baris test (baca & tidak perlu hapus file, biar user lihat)
+}
+

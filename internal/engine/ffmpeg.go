@@ -51,13 +51,14 @@ func CheckFFmpeg() error {
 // - unsharp = tajamkan dikit (biar tidak burem setelah kompres)
 // - eq = terangkan kalau gelap (brightness 0.06 = +6%)
 // YAGNI: belum pakai AI upscale / denoise berat di v1.
-func BuildArgs(input, output string, p Profile) []string {
-	// vf = video filter chain
-	// scale: kecilkan/besarkan ke dalam kotak target, lalu pad jadi pas 1080x1920 / 720x1280
-	vf := fmt.Sprintf(
-		"scale=w=%d:h=%d:force_original_aspect_ratio=decrease,pad=%d:%d:(%d-iw)/2:(%d-ih)/2:color=black,unsharp=5:5:0.8:3:3:0.4,eq=brightness=0.06:contrast=1.05:saturation=1.1",
-		p.Width, p.Height, p.Width, p.Height, p.Width, p.Height,
-	)
+func BuildArgs(input, output string, p Profile, f Filter) []string {
+	// vf = scale+pad + filter gaya (Natural/Dramatis/Cinematic/Original)
+	baseVF := fmt.Sprintf("scale=w=%d:h=%d:force_original_aspect_ratio=decrease,pad=%d:%d:(%d-iw)/2:(%d-ih)/2:color=black", p.Width, p.Height, p.Width, p.Height, p.Width, p.Height)
+	extra := filterVF(f)
+	vf := baseVF
+	if extra != "" {
+		vf = baseVF + "," + extra
+	}
 
 	return []string{
 		"-y", // overwrite output
@@ -77,14 +78,20 @@ func BuildArgs(input, output string, p Profile) []string {
 
 // Run: eksekusi FFmpeg dengan context (bisa cancel) + log aman.
 // Tidak pakai shell, jadi aman dari injection (SSRF/XSS tidak relevan di CLI, tapi command injection kita cegah).
-func Run(ctx context.Context, input, output string, p Profile) error {
+func Run(ctx context.Context, input, output string, p Profile, f Filter) error {
+	if f == FilterRequest {
+		return fmt.Errorf("filter request tidak diproses FFmpeg — pakai SaveRequest")
+	}
+	if !f.IsValid() {
+		return fmt.Errorf("filter tidak valid: %s", f)
+	}
 	if err := ValidateInput(input); err != nil {
 		return err
 	}
 	if err := CheckFFmpeg(); err != nil {
 		return err
 	}
-	args := BuildArgs(input, output, p)
+	args := BuildArgs(input, output, p, f)
 	cmd := exec.CommandContext(ctx, "ffmpeg", args...)
 	// gabung stderr ke output biar bisa di-log kalau gagal
 	out, err := cmd.CombinedOutput()
