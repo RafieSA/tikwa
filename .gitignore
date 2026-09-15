@@ -1,0 +1,9 @@
+# Binary
+/tikwa
+*.mp4
+*.mov
+*.mkv
+# OS
+.DS_Store
+# Go
+/vendor/
