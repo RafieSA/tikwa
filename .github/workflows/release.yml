@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+          cache: true
+      - name: Build 4 binaries
+        run: |
+          mkdir -p dist
+          GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o dist/tikwa-darwin-arm64 .
+          GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o dist/tikwa-darwin-amd64 .
+          GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o dist/tikwa-linux-amd64 .
+          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o dist/tikwa-windows-amd64.exe .
+          ls -lh dist/
+          shasum -a 256 dist/*
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
