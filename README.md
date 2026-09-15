@@ -1,52 +1,150 @@
 # ▶ TIKWA — Bikin Video HP Tidak Burem
 
-**TIKWA** = **TIK**Tok + **WA** Enhancer. TUI premium di terminal untuk memoles video dari HP (misal Samsung A23 5G) agar tidak burem saat upload ke TikTok & WhatsApp.
+<p align="center">
+  <img src="https://img.shields.io/badge/Go-1.26-00ADD8?style=for-the-badge&logo=go" alt="Go 1.26" />
+  <img src="https://img.shields.io/badge/TUI-Bubble_Tea-FF75B5?style=for-the-badge" alt="Bubble Tea" />
+  <img src="https://img.shields.io/badge/FFmpeg-8.1-007808?style=for-the-badge" alt="FFmpeg" />
+  <img src="https://img.shields.io/badge/License-MIT-FFD700?style=for-the-badge" alt="MIT" />
+  <img src="https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey?style=for-the-badge" alt="Platform" />
+</p>
+
+<p align="center">
+  <strong>TIKWA</strong> = <strong>TIK</strong>Tok + <strong>WA</strong> Enhancer<br/>
+  TUI premium di terminal — poles video HP (Samsung A23 5G, dll) biar <em>tidak burem</em> pas upload ke TikTok & WhatsApp.
+</p>
+
+<p align="center">
 
 ```
-┏━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃  ▶  T I K W A  ◀         ┃
-┃  Bikin Video Jadi Cling ┃
-┃  TikTok • WhatsApp      ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━┛
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃   ▶  T I K W A  ◀              ┃
+┃   Bikin Video Jadi Cling ✨   ┃
+┃   TikTok • WhatsApp • Go      ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ```
 
-## Fitur v1 (Level 1 Basic Polish)
+</p>
 
-- **Profil TikTok:** 1080×1920 vertikal, tajam, terang — tidak diperas lagi oleh TikTok
-- **Profil WhatsApp:** 720p kecil <25MB, tetap jernih — lolos limit WA
-- **TUI cantik:** welcoming animation, menu angka [1]/[2], loading bar, empty & error state jelas
-- **Aman:** tanpa shell injection, validasi file, cek FFmpeg
+---
 
-## Install
+## ✨ Preview TUI
+
+```
+┌──────────────────────────────────────────────┐
+│  ▶  TIKWA  ◀  — Bikin Video HP Tidak Burem   │
+│  TikTok • WhatsApp                           │
+├──────────────────────────────────────────────┤
+│  [1] Untuk TikTok  — 1080×1920 vertikal      │
+│  [2] Untuk WhatsApp — 720p kecil (<25MB)     │
+│  [q] Keluar                                  │
+├──────────────────────────────────────────────┤
+│  ↑↓ pilih  •  1/2 atau Enter  •  q keluar   │
+└──────────────────────────────────────────────┘
+         ↓ pilih 1
+┌──────────────────────────────────────────────┐
+│  → Mode: TIKTOK (1080×1920)                  │
+│  Path video: [/Users/rafie/Movies/VID.mp4 ]  │
+│  📭 Contoh: drag & drop file ke terminal     │
+└──────────────────────────────────────────────┘
+         ↓ Enter
+┌──────────────────────────────────────────────┐
+│  ⏳ Memoles: VID.mp4 → VID-tiktok.mp4        │
+│  [█████████████░░░░░░] 65%                   │
+└──────────────────────────────────────────────┘
+         ↓
+┌──────────────────────────────────────────────┐
+│  ✅ Berhasil! Hasil: VID-tiktok.mp4 (42MB)   │
+└──────────────────────────────────────────────┘
+```
+
+> Empty state `📭`, Loading bar, Error `❌ File bukan video` — semua dipoles, tidak cuma `print`.
+
+---
+
+## 🎯 Fitur v1 (Level 1 — Basic Polish)
+
+| Profil | Resolusi | Bitrate | Hasil | Cocok untuk |
+|---|---|---|---|---|
+| **TikTok** | 1080×1920 vertikal (pad + scale, tidak stretch) | 5000k + CRF 23 | Tajam, terang (+6% brightness, +5% contrast) | Upload TikTok tidak diperas lagi |
+| **WhatsApp** | 720×1280 | 2500k + CRF 23 | Kecil <25MB, tetap jernih | Lolos limit 64MB WA |
+
+- **Aman:** `exec.Command` tanpa shell (anti command injection), `filepath.Clean`, validasi ekstensi & size
+- **Cepat:** `preset medium`, single binary Go, tidak butuh Python/Node
+- **Ringan:** jalan di MBA M4 sampai laptop kentang
+
+## 📦 Install
+
+### Opsi A — Go install (paling gampang kalau sudah ada Go)
+```bash
+go install github.com/RafieSA/tikwa@latest
+tikwa
+```
+
+### Opsi B — Download binary (tanpa Go)
+Download di [Releases](https://github.com/RafieSA/tikwa/releases) → pilih sesuai OS:
+- `tikwa-darwin-arm64` (M1/M2/M3/M4 Mac)
+- `tikwa-darwin-amd64` (Intel Mac)
+- `tikwa-linux-amd64`
+- `tikwa-windows-amd64.exe`
 
 ```bash
-git clone https://github.com/rafiesafarazaribowo/tikwa.git
+chmod +x tikwa-darwin-arm64
+./tikwa-darwin-arm64
+```
+
+### Opsi C — Build dari source
+```bash
+git clone https://github.com/RafieSA/tikwa.git
 cd tikwa
 go build -o tikwa .
 ./tikwa
 ```
 
-Butuh **FFmpeg**: `brew install ffmpeg` (macOS) / `sudo apt install ffmpeg` (Linux)
+**Syarat:** FFmpeg wajib ada
+```bash
+brew install ffmpeg        # macOS
+sudo apt install ffmpeg    # Ubuntu/Debian
+winget install ffmpeg      # Windows
+ffmpeg -version            # cek
+```
 
-## Pakai
+## 🚀 Pakai
 
-1. Jalankan `./tikwa`
-2. Tekan `1` untuk TikTok, `2` untuk WhatsApp
-3. Paste path video (drag & drop juga bisa)
+1. Jalankan `tikwa`
+2. Tekan `1` untuk TikTok atau `2` untuk WhatsApp (atau `↑↓` + Enter)
+3. Paste path video — **drag & drop** file ke terminal juga bisa
 4. Enter → tunggu loading → jadi!
 
-Output: `video-tiktok.mp4` atau `video-wa.mp4` di folder yang sama.
+Output di folder yang sama:
+- `VID_20260915-tiktok.mp4` (TikTok)
+- `VID_20260915-whatsapp.mp4` (WA)
 
-## Teknologi
+Edge cases yang sudah di-handle:
+- File kosong / tidak ada → `❌ file tidak ditemukan`
+- Salah pilih folder / .jpg → `❌ format belum didukung`
+- Nama file ada spasi `video gue.mp4` → aman
+- FFmpeg belum install → `❌ ffmpeg tidak ditemukan — brew install ffmpeg`
 
-Go + Bubble Tea + Lipgloss + FFmpeg (tidak bikin dari 0, manfaatkan yang sudah ada).
+## 🛠 Teknologi
 
-## Roadmap
+- **Go 1.26** + **Bubble Tea** + **Lipgloss** + **Bubbles** — TUI modern, single binary
+- **FFmpeg 8.1** — tidak bikin dari 0, manfaatkan yang sudah ada (YAGNI, DRY)
+- Clean Code, SRP, testable, logging — no spaghetti, no shortcut
 
-- v1: Basic Polish (sekarang)
-- v2: Smart Clean (denoise + stabilizer)
-- v3: AI Upscale (opsional, butuh GPU)
+## 🗺 Roadmap
 
-## License
+- [x] **v0.1 — Basic Polish** (sekarang): bright, sharp, scale+pad, CRF, TUI polish
+- [ ] **v0.2 — Smart Clean**: denoise, stabilizer (butuh CPU lebih)
+- [ ] **v0.3 — AI Upscale**: Real-ESRGAN opsional (butuh GPU, model ratusan MB)
 
-MIT — bebas pakai.
+## 🤝 Kontribusi
+
+PR & Issue welcome! Jalanin `go vet ./...` dan `go test ./...` sebelum PR.
+
+## 📄 License
+
+MIT — bebas pakai, lihat [LICENSE](LICENSE).
+
+---
+
+<p align="center">Dibuat dengan ✨ di kamar, MBA M4, oleh <a href="https://github.com/RafieSA">RafieSA</a> — untuk kreator yang videonya tidak boleh burem lagi.</p>
